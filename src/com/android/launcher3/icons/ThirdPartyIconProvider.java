@@ -15,10 +15,16 @@ import com.android.launcher3.util.ComponentKey;
 
 import javax.inject.Inject;
 
-import static com.android.launcher3.icons.BaseIconFactory.CONFIG_HINT_NO_WRAP;
-
 @LauncherAppSingleton
 public class ThirdPartyIconProvider extends LauncherIconProvider {
+
+    /**
+     * Marks an icon pack drawable that is already the final shape, so {@code IconLoader} must not
+     * wrap it in an adaptive icon. Penguin keeps this in iconloaderlib's {@code BaseIconFactory};
+     * the constant only matters to the launcher, so it lives here instead of requiring a
+     * frameworks/libs/systemui fork.
+     */
+    public static final int CONFIG_HINT_NO_WRAP = 1 << 30;
 
     private final Context mContext;
     private final ThemeManager mThemeManager;

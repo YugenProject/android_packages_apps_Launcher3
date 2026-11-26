@@ -30,11 +30,11 @@ import com.android.launcher3.InvariantDeviceProfile
 import com.android.launcher3.LauncherSettings.Favorites
 import com.android.launcher3.Utilities
 import com.android.launcher3.dragndrop.FolderAdaptiveIcon
-import com.android.launcher3.icons.BaseIconFactory
 import com.android.launcher3.icons.BitmapInfo
 import com.android.launcher3.icons.CacheableShortcutInfo.Companion.getIcon
 import com.android.launcher3.icons.IconCache
 import com.android.launcher3.icons.LauncherIconProvider
+import com.android.launcher3.icons.ThirdPartyIconProvider
 import com.android.launcher3.icons.LauncherIcons
 import com.android.launcher3.icons.cache.CacheLookupFlag
 import com.android.launcher3.icons.cache.CachedObjectCachingLogic.loadFullResIcon
@@ -129,7 +129,7 @@ constructor(
             if (mainIcon is AdaptiveIconDrawable) {
                 mainIcon
             } else if (
-                mainIcon.changingConfigurations and BaseIconFactory.CONFIG_HINT_NO_WRAP == 0
+                mainIcon.changingConfigurations and ThirdPartyIconProvider.CONFIG_HINT_NO_WRAP == 0
             ) {
                 // Wrap the main icon in AID
                 LauncherIcons.obtain(context).use { li -> li.wrapToAdaptiveIcon(mainIcon) }
