@@ -17,22 +17,47 @@
 package com.android.launcher3.util.override;
 
 import android.content.Context;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.launcher3.util.Executors;
 import com.android.launcher3.util.SafeCloseable;
 
+import java.util.concurrent.ExecutionException;
+
 /**
- * A {@link com.android.launcher3.util.MainThreadInitializedObject} whose implementation class is
- * named by a string resource, so a derivative can swap the implementation without touching code.
+ * A lazily-initialised singleton whose implementation class is named by a string resource, so a
+ * derivative can swap the implementation without touching code.
+ *
+ * <p>This mirrors {@code com.android.launcher3.util.MainThreadInitializedObject}, which only the
+ * Go variant compiles, and adds {@link #forOverride}.
  */
-public class MainThreadInitializedObject<T extends SafeCloseable>
-        extends com.android.launcher3.util.MainThreadInitializedObject<T> {
+public class MainThreadInitializedObject<T extends SafeCloseable> {
 
     private static final String TAG = "ResourceOverride";
 
+    private final ObjectProvider<T> mProvider;
+    private T mValue;
+
     public MainThreadInitializedObject(ObjectProvider<T> provider) {
-        super(provider);
+        mProvider = provider;
+    }
+
+    public T get(Context context) {
+        Context app = context.getApplicationContext();
+        if (mValue == null) {
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                mValue = mProvider.get(app);
+            } else {
+                try {
+                    return Executors.MAIN_EXECUTOR.submit(() -> get(context)).get();
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return mValue;
     }
 
     /**
@@ -62,5 +87,9 @@ public class MainThreadInitializedObject<T extends SafeCloseable>
                 throw new IllegalStateException("Unable to create " + clazz.getName(), e);
             }
         });
+    }
+
+    public interface ObjectProvider<T> {
+        T get(Context context);
     }
 }
