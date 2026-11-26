@@ -538,8 +538,10 @@ android_library {
     // dependency. See b/208647810 for how this can go wrong.
     static_libs: [
         "SystemUI-statsd",
-        // DeX's dock and Launchpad
-        "PenguinDexLauncher",
+        // PenguinDexLauncher (DeX's dock and Launchpad) is not shipped by Yugen
+        // yet: it comes from penguin_packages_apps_PenguinDex. Nothing in this
+        // tree references com.penguin.dex.launcher, so the dependency is
+        // dropped until PenguinDex is ported.
         "QuickstepResLib",
         "androidx.room_room-runtime",
         "androidx.room_room-ktx",
