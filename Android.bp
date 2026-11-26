@@ -538,10 +538,8 @@ android_library {
     // dependency. See b/208647810 for how this can go wrong.
     static_libs: [
         "SystemUI-statsd",
-        // PenguinDexLauncher (DeX's dock and Launchpad) is not shipped by Yugen
-        // yet: it comes from penguin_packages_apps_PenguinDex. Nothing in this
-        // tree references com.penguin.dex.launcher, so the dependency is
-        // dropped until PenguinDex is ported.
+        // DeX's dock and Launchpad, imported from PenguinDex below
+        "PenguinDexLauncher",
         "QuickstepResLib",
         "androidx.room_room-runtime",
         "androidx.room_room-ktx",
@@ -706,4 +704,16 @@ prebuilt_etc {
     sub_dir: "permissions",
     src: "privapp_whitelist_com.android.launcher3-ext.xml",
     filename_from_src: true,
+}
+
+// DeX's look for the launcher on a connected screen: its dock and Launchpad.
+// This is PenguinDex's launcher/ module, built here because the taskbar links
+// it and PenguinDex itself is not shipped yet.
+android_library {
+    name: "PenguinDexLauncher",
+    srcs: ["launcher/src/**/*.kt"],
+    resource_dirs: ["launcher/res"],
+    manifest: "launcher/AndroidManifest.xml",
+    platform_apis: true,
+    min_sdk_version: "current",
 }
